@@ -1,5 +1,5 @@
 // SYSTEM PROTECTION //
-//liens interdits type screamers ou prank types ainsi que le des terms & expressions auto-suppressions (basique)
+//liens interdits type screamers ou prank types ainsi que des terms & expressions auto-suppressions (basics)
 export const BLOCKED_WORDS = [
   'salope',
   'putain',
