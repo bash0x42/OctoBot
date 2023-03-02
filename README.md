@@ -1,4 +1,5 @@
-# OctoBot
+
+
 OctoBot → Vous aide dans votre modération twitch [Débutant·es - Intermédiaire]
 
 
@@ -19,7 +20,7 @@ security/settings.js → Paramétrages
  ```
 
 ```js
- export const CHANNEL_NAME = '#channel';  // Mettre le nom du live où vous êtes modératrices ou diffuseurs exemple '#lepetitcompte'
+export const CHANNEL_NAME = '#channel';  // Mettre le nom du live où vous êtes modératrices ou diffuseurs exemple '#lepetitcompte'
 export const OAUTH_TOKEN = 'oauth:blablabla........'; // Mettre votre clé OAUTH générer grâce à → 'https://twitchapps.com/tmi/' 
 export const BOT_USERNAME = 'compte'; // Le nom de votre compte ou le nom de compte que vous souhaitez utiliser pour la modération et assurez-vous d'avoir mis les droits de modérations sur siel-ci.
 ```
