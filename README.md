@@ -1,4 +1,4 @@
-![OctoBot](https://github.com/bash0x42/imagepanel/blob/main/OctoBot.png)
+![OctoBot](https://github.com/bash0x42/icons/blob/main/bash0x42.gif)
 
 OctoBot → Vous aide dans votre modération twitch [Débutant·es - Intermédiaire]
 
