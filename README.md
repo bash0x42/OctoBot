@@ -1,4 +1,4 @@
-![OctoBot](https://github.com/bash0x42/imagepanel/blob/main/OctoBot.png)
+![OctoBot](https://github.com/bash0x42/icons/blob/main/Octobot.png)
 
 OctoBot → Vous aide dans votre modération twitch [Débutant·es - Intermédiaire]
 
@@ -51,3 +51,4 @@ Connected: irc-ws.chat.twitch.tv:443
 [11:42] info: Executing command: JOIN #potite_bulle
 [11:42] info: Joined #potite_bulle
 ```
+Voilà **OctoBot** est Fonctionnelle & Opérationnelle 
