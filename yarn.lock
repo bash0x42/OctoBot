@@ -7,16 +7,6 @@
   "resolved" "https://registry.npmjs.org/esm/-/esm-3.2.25.tgz"
   "version" "3.2.25"
 
-"linkify@^0.2.1":
-  "integrity" "sha512-Esq4rfRRHmH3RTqAsnGq33MwE0HqyeNWHpNbWFsV8jEnuPKseiOPjzWvK2i3REqwZpnbCxTh1yxAKzceKKFDGQ=="
-  "resolved" "https://registry.npmjs.org/linkify/-/linkify-0.2.1.tgz"
-  "version" "0.2.1"
-
-"linkifyjs@^4.1.0":
-  "integrity" "sha512-Ffv8VoY3+ixI1b3aZ3O+jM6x17cOsgwfB1Wq7pkytbo1WlyRp6ZO0YDMqiWT/gQPY/CmtiGuKfzDIVqxh1aCTA=="
-  "resolved" "https://registry.npmjs.org/linkifyjs/-/linkifyjs-4.1.0.tgz"
-  "version" "4.1.0"
-
 "node-fetch@^2.6.1":
   "integrity" "sha512-RZ6dBYuj8dRSfxpUSu+NsdF1dpPpluJxwOp+6IoDp/sH2QNDSvurYsAa+F1WxY2RjA1iP93xhcsUoYbF2XBqVg=="
   "resolved" "https://registry.npmjs.org/node-fetch/-/node-fetch-2.6.8.tgz"
