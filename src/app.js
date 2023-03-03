@@ -18,130 +18,83 @@ const options = {
   },
   channels: [CHANNEL_NAME]
 }
-const deletedMessages = new Map();
+
 const client = new tmi.Client(options);
-client.connect();
-// GESTIONS EVENTS //
-client.on('disconnected', (reason) => {
-  onDisconnectedHandler(reason)
-})
 
-client.on('connected', (address, port) => {
-  onConnectedHandler(address, port)
+/*  PROTECTION DU SYSTEM  */ 
 
-})
+//:: ban tempo ::
+const MAX_TIMEOUTS = 3;
+const timeoutCount = new Map();
 
-// EVENT LOGS Connected && Disconnected //
-function onDisconnectedHandler(reason) {
-  console.log(`Disconnected: ${reason}`)
+function handleTimeout(channel, username) {
+  timeoutCount.delete(username);
+  client.ban(channel, username, (SYSTEMBANTEMPO) => `3 timeouts = ban automatique`)
+    .then(() => console.log(`Utilisateur ${username} banni après 3 timeouts`))
+    .catch((err) => console.log(`Erreur lors du bannissement de l'utilisateur ${username}: ${err}`));
 }
 
-function onConnectedHandler(address, port) {
-  console.log(`Connected: ${address}:${port}`)
-}
+client.on('timeout', (channel, userstate, reason, duration) => {
+  const { username } = userstate;
+  const count = timeoutCount.get(username) || 0;
+  timeoutCount.set(username, count + 1);
 
-// EVENT TCHAT TERMS & EXPRESSIONS //
-client.on('message', (channel, userstate, message, self) => {
-  if (self) {
-    return
-  }
-  onMessageHandler(channel, userstate, message, self);
-})
-
-function onMessageHandler(channel, userstate, message, self) {
-  checkTwitchChat(userstate, message, channel)
-}
-
-
-
-/*
-              EVENTS DU SYSTEM ( :: bit :: subs :: subgift :: anongift :: raid :: )
-*/ 
-
-// Événement lorsqu'un.e utilisateurices fait une donation.
-client.on('cheer', (channel, tags, message) => {
-  const username = tags.username;
-  const amount = tags.bits;
-
-  client.say(channel, `Merci à ${username} pour sa donation de ${amount} bits !`);
-});
-
-// Événement lorsqu'un.e utilisateurices s'abonne.
-client.on('subscription', (channel, username, methods, message, userstate) => {
-  const subMonths = userstate['msg-param-cumulative-months'];
-  const subPlan = userstate['msg-param-sub-plan-name'];
-
-  client.say(channel, `Merci à ${username} pour son abonnement ${subPlan} (${subMonths} mois consécutifs) !`);
-});
-
-// Événement lorsqu'un.e utilisateurices offre un abonnement à un autre utilisateurices.
-client.on('subgift', (channel, username, recipient, methods, userstate) => {
-  const subPlan = userstate['msg-param-sub-plan-name'];
-
-  client.say(channel, `Merci à ${username} pour l'abonnement cadeau de ${subPlan} à ${recipient} !`);
-});
-
-// Événement lorsqu'un.e utilisateurices offre des abonnements mystères à une ou plusieurs utilisateurices.
-client.on('submysterygift', (channel, username, numbOfSubs, methods, userstate) => {
-  const recipient = userstate['msg-param-recipient-display-name'];
-
-  client.say(channel, `Merci à ${username} pour l'abonnement mystère à ${numbOfSubs} abonnés, dont ${recipient} !`);
-});
-
-// Événement lorsqu'un.e utilisateurices raid votre chaîne
-client.on('raided', (channel, username) => {
-  client.say(channel, `${username} , Merci pour le raid !`);
-});
-
-
-/*
-              PROTECTION DU SYSTEM ( :: automods :: ban tempo :: ban def  :: termes & expressions :: automods links :: )
-*/ 
-
-// :: ban auto si 3 to :: //
-let timeoutCount = {};
-client.on('timeout', (channel, username) => {
-  // Vérifier si l'utilisateurices a déjà été timeout.
-  if (timeoutCount[username]) {
-    timeoutCount[username]++;
+  if (count + 1 === MAX_TIMEOUTS) {
+    handleTimeout(channel, username);
   } else {
-    timeoutCount[username] = 1;
-  }
-
-  // Si l'utilisateurices a été timeout 3 fois, le bannir.
-  if (timeoutCount[username] >= 3) {
-    client.ban(channel, username, (SafetyCenterSystem) => `3 Timeout = BAN AUTO`);
-    timeoutCount[username] = 0;
+    console.log(`Utilisateur ${username} timeout (${count + 1}/${MAX_TIMEOUTS})`);
   }
 });
 
-// :: ban def si message sup (3 messages sup = Ban) :: //
+client.connect()
+  .then(() => console.log(`Connecté au chat de ${client.getChannels().join(', ')}`))
+  .catch((err) => console.log(`Erreur lors de la connexion: ${err}`));
+
+
+
+
+//:: autoban messages ::
+const MAX_DELETED_MESSAGES = 3;
+
+// Créer une carte pour stocker le nombre de messages supprimés par utilisateurices.
+let deletedMessages = new Map();
+
+// Écouter les événements de suppression de messages.
 client.on('messagedeleted', (channel, username, deletedMessage, self) => {
-  // Vérifie si le message provient de l'utilisateurices.
+  // Vérifier si le message supprimé provient de l'utilisateurices.
   if (self) {
-    // Récupère le nombre de messages supprimés pour l'utilisateurices.
-    let count = deletedMessages.get(username) || 0;
-    // Incrémenter le nombre de messages supprimés et mise à jour de la carte.
-    deletedMessages.set(username, count + 1);
-    // Si l'utilisateurices a atteint le nombre maximal de messages supprimés, le ban sonne.
-    if (deletedMessages.get(username) === 3) {
-      client.ban(channel, username, (ban) => 'Propos Problématiques');
-      console.log(`${username} a été Banni → Voir les logs messages`);
-      // Supprimer l'utilisateurices de la carte des messages supprimés après l'avoir ban.
-      deletedMessages.delete(username);
+    // Vérifier si le message a été supprimé par un modérateur ou un administrateur.
+    if (deletedMessage.tags['user-id'] !== deletedMessage.tags['target-user-id']) {
+      // Récupérer le nombre de messages supprimés pour l'utilisateurices.
+      let count = deletedMessages.get(username) || 0;
+      // Incrémenter le nombre de messages supprimés et mettre à jour la carte.
+      deletedMessages.set(username, count + 1);
+      // Si l'utilisateurices a atteint le nombre maximal de messages supprimés, le bannir.
+      if (deletedMessages.get(username) === MAX_DELETED_MESSAGES) {
+        // Bannir l'utilisateurices avec un message d'explication.
+        client.ban(channel, username, (SYSTEMAUTOBANMESSAGES) =>'Trois messages supprimés. Merci de respecter les règles du chat.');
+        console.log(`${username} a été banni pour ${MAX_DELETED_MESSAGES} messages supprimés.`);
+        // Supprimer l'utilisateurices de la carte des messages supprimés après l'avoir banni.
+        deletedMessages.delete(username);
+      }
     }
   } else {
+    // Si le message supprimé n'a pas été envoyé par l'utilisateurices, supprimer l'utilisateurices de la carte.
     deletedMessages.delete(username);
   }
 });
 
 // :: termes & expressions :: // 
+const TIMEOUT_DURATION = 600; // en secondes
+
 function checkTwitchChat(userstate, message, channel) {
-  console.log(message)
-  message = message.toLowerCase()
-  let shouldSendMessage = false
-  shouldSendMessage = BLOCKED_WORDS.some(blockedWord => message.includes(blockedWord.toLowerCase()));
-  if (shouldSendMessage) {
-    client.deletemessage(channel, userstate.id)
+  console.log(message);
+  const messageLowercase = message.toLowerCase();
+  for (const blockedWord of BLOCKED_WORDS) {
+    if (messageLowercase.includes(blockedWord.toLowerCase())) {
+      // Appliquer le timeout à l'utilisateur
+      client.timeout(channel, userstate.username, TIMEOUT_DURATION, (SYSTEMSECURE) => "Message contenant un terme bloqué");
+      return;
+    }
   }
 }
