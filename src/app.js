@@ -110,7 +110,7 @@ client.on('timeout', (channel, username) => {
 
   // Si l'utilisateurices a été timeout 3 fois, le bannir.
   if (timeoutCount[username] >= 3) {
-    client.ban(channel, username, (SafetyCenterPiquetdestream) => `3 Timeout = BAN AUTO`);
+    client.ban(channel, username, (SafetyCenterSystem) => `3 Timeout = BAN AUTO`);
     timeoutCount[username] = 0;
   }
 });
