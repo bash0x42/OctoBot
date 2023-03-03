@@ -36,7 +36,7 @@ npm install
 
 ainsi que 
 ```
-yarn  start
+yarn start
 ```
 Si vous avez tout bien installé & paramétrer via le terminal vous devrait avoir ceci (exemple):
 
